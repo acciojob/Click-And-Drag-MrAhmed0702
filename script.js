@@ -1,39 +1,49 @@
-const cubes = document.querySelectorAll('.cube');
-let activeCube = null;
+const itemsContainer = document.querySelector('.items');
+  const items = document.querySelectorAll('.item');
 
-cubes.forEach(cube => {
-    cube.addEventListener('mousedown', (e) => {
-        activeCube = cube;
-        offsetX = e.clientX - cube.getBoundingClientRect().left;
-        offsetY = e.clientY - cube.getBoundingClientRect().top;
+  let activeItem = null;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  items.forEach(item => {
+    // Make each item absolutely positioned within the scroll container
+    item.style.position = 'absolute';
+
+    // Optional: randomly distribute them initially
+    item.style.left = Math.random() * (itemsContainer.scrollWidth - item.offsetWidth) + 'px';
+    item.style.top = '100px'; // or however you want
+
+    item.addEventListener('mousedown', (e) => {
+      activeItem = item;
+      offsetX = e.clientX - item.getBoundingClientRect().left;
+      offsetY = e.clientY - item.getBoundingClientRect().top;
     });
-});
+  });
 
-document.addEventListener('mousemove', (e) => {
-    if (activeCube) {
-        const container = document.querySelector('.container');
-        const containerRect = container.getBoundingClientRect();
+  document.addEventListener('mousemove', (e) => {
+    if (activeItem) {
+      const containerRect = itemsContainer.getBoundingClientRect();
 
-        // Calculate new position
-        let newX = e.clientX - containerRect.left - offsetX;
-        let newY = e.clientY - containerRect.top - offsetY;
+      // Calculate new position relative to container
+      let newX = e.clientX - containerRect.left - offsetX + itemsContainer.scrollLeft;
+      let newY = e.clientY - containerRect.top - offsetY;
 
-        // Boundary checks
-        if (newX < 0) newX = 0;
-        if (newY < 0) newY = 0;
-        if (newX + activeCube.offsetWidth > containerRect.width) {
-            newX = containerRect.width - activeCube.offsetWidth;
-        }
-        if (newY + activeCube.offsetHeight > containerRect.height) {
-            newY = containerRect.height - activeCube.offsetHeight;
-        }
+      // Optional: boundary checks
+      if (newX < 0) newX = 0;
+      if (newY < 0) newY = 0;
+      if (newX + activeItem.offsetWidth > itemsContainer.scrollWidth) {
+        newX = itemsContainer.scrollWidth - activeItem.offsetWidth;
+      }
+      if (newY + activeItem.offsetHeight > itemsContainer.offsetHeight) {
+        newY = itemsContainer.offsetHeight - activeItem.offsetHeight;
+      }
 
-        // Update position
-        activeCube.style.left = newX + 'px';
-        activeCube.style.top = newY + 'px';
+      // Apply position
+      activeItem.style.left = newX + 'px';
+      activeItem.style.top = newY + 'px';
     }
-});
+  });
 
-document.addEventListener('mouseup', () => {
-    activeCube = null; // Release the cube
-});
+  document.addEventListener('mouseup', () => {
+    activeItem = null;
+  });
