@@ -8,20 +8,28 @@ let isDraggingContainer = false;
 let startX;
 let scrollLeft;
 
-// Position cubes in a grid
 const itemSize = 100;
 const gap = 10;
 const cols = Math.floor(container.clientWidth / (itemSize + gap));
 
+container.style.width = '800px'; // fixed visible container width
+container.style.overflowX = 'auto';
+
+// Set container scrollable width to fit all items in a row
+const contentWidth = (itemSize + gap) * items.length;
+container.style.minWidth = contentWidth + 'px';
+
 items.forEach((item, i) => {
-  let col = i % cols;
-  let row = Math.floor(i / cols);
+  let col = i;
+  let row = 0;
   item.style.position = 'absolute';
+  item.style.width = itemSize + 'px';
+  item.style.height = itemSize + 'px';
   item.style.left = `${col * (itemSize + gap)}px`;
   item.style.top = `${row * (itemSize + gap)}px`;
 
   item.addEventListener('mousedown', (e) => {
-    e.stopPropagation(); // prevent container drag start
+    e.stopPropagation();
     activeItem = item;
     isDraggingItem = true;
     offsetX = e.clientX - item.getBoundingClientRect().left;
@@ -31,7 +39,7 @@ items.forEach((item, i) => {
 });
 
 container.addEventListener('mousedown', (e) => {
-  if (e.target === container) {
+  if (!e.target.classList.contains('item')) {
     isDraggingContainer = true;
     startX = e.pageX - container.offsetLeft;
     scrollLeft = container.scrollLeft;
@@ -60,7 +68,7 @@ document.addEventListener('mousemove', (e) => {
   } else if (isDraggingContainer) {
     e.preventDefault();
     const x = e.pageX - container.offsetLeft;
-    const walk = (startX - x); // distance moved
+    const walk = (startX - x);
     container.scrollLeft = scrollLeft + walk;
   }
 });
