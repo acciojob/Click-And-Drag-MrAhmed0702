@@ -1,29 +1,54 @@
-const slider = document.querySelector('.items');
-let isDown = false;
-let startX;
-let scrollLeft;
+const container = document.getElementById('container');
+    const items = container.querySelectorAll('.item');
 
-slider.addEventListener('mousedown', (e) => {
-  isDown = true;
-  slider.classList.add('active');
-  startX = e.clientX;
-  scrollLeft = slider.scrollLeft;
-});
+    let activeItem = null;
+    let offsetX = 0;
+    let offsetY = 0;
 
-slider.addEventListener('mouseleave', () => {
-  isDown = false;
-  slider.classList.remove('active');
-});
+    // Position cubes in a grid layout
+    const itemSize = 100; // same as width/height in CSS
+    const gap = 10;
+    let cols = Math.floor((container.clientWidth) / (itemSize + gap));
 
-slider.addEventListener('mouseup', () => {
-  isDown = false;
-  slider.classList.remove('active');
-});
+    items.forEach((item, i) => {
+      let col = i % cols;
+      let row = Math.floor(i / cols);
+      item.style.left = `${col * (itemSize + gap)}px`;
+      item.style.top = `${row * (itemSize + gap)}px`;
 
-slider.addEventListener('mousemove', (e) => {
-  if (!isDown) return;
-  e.preventDefault();
-  const x = e.clientX;
-  const walk = (x - startX) * 2;
-  slider.scrollLeft = scrollLeft - walk;
-});
+      item.addEventListener('mousedown', (e) => {
+        activeItem = item;
+        offsetX = e.clientX - item.getBoundingClientRect().left;
+        offsetY = e.clientY - item.getBoundingClientRect().top;
+        item.classList.add('dragging');
+      });
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!activeItem) return;
+
+      const containerRect = container.getBoundingClientRect();
+
+      let newX = e.clientX - containerRect.left - offsetX;
+      let newY = e.clientY - containerRect.top - offsetY;
+
+      // Boundary checks
+      if (newX < 0) newX = 0;
+      if (newY < 0) newY = 0;
+
+      const maxX = container.clientWidth - activeItem.clientWidth;
+      const maxY = container.clientHeight - activeItem.clientHeight;
+
+      if (newX > maxX) newX = maxX;
+      if (newY > maxY) newY = maxY;
+
+      activeItem.style.left = newX + 'px';
+      activeItem.style.top = newY + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (activeItem) {
+        activeItem.classList.remove('dragging');
+        activeItem = null;
+      }
+    });
