@@ -45,10 +45,9 @@ body {
 }
 
 .item {
-  position: absolute;
   width: 200px;
-  height: 200px;
-  display: flex;
+  height: calc(100% - 40px);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 80px;
