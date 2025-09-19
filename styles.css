@@ -21,7 +21,7 @@ body {
 .items {
   height: 800px;
   padding: 100px;
-  width: 600px;
+  width: 100%;
   border: 1px solid white;
   overflow-x: scroll;
   overflow-y: hidden;
