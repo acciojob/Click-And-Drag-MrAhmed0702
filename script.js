@@ -1,46 +1,29 @@
-// Your code here.
-const container = document.querySelector('.items');
-const cubes = document.querySelectorAll('.item');
+const slider = document.querySelector('.items');
+let isDown = false;
+let startX;
+let scrollLeft;
 
-let selectedCube = null;
-let offsetX = 0;
-let offsetY = 0;
-
-cubes.forEach(cube => {
-  cube.style.position = 'absolute';
-
-  const index = Array.from(cubes).indexOf(cube);
-  const size = 100;
-  const cols = 5; 
-  cube.style.left = (index % cols) * (size + 20) + 'px';
-  cube.style.top = Math.floor(index / cols) * (size + 20) + 'px';
-
-  cube.addEventListener('mousedown', (e) => {
-    selectedCube = cube;
-    offsetX = e.clientX - cube.offsetLeft;
-    offsetY = e.clientY - cube.offsetTop;
-    cube.style.zIndex = 1000;
-  });
+slider.addEventListener('mousedown', (e) => {
+  isDown = true;
+  slider.classList.add('active');
+  startX = e.pageX - slider.offsetLeft;
+  scrollLeft = slider.scrollLeft;
 });
 
-document.addEventListener('mousemove', (e) => {
-  if (!selectedCube) return;
-  const containerRect = container.getBoundingClientRect();
-  const cubeRect = selectedCube.getBoundingClientRect();
-
-  let newX = e.clientX - containerRect.left - offsetX;
-  let newY = e.clientY - containerRect.top - offsetY;
-
-  newX = Math.max(0, Math.min(newX, container.clientWidth - cubeRect.width));
-  newY = Math.max(0, Math.min(newY, container.clientHeight - cubeRect.height));
-
-  selectedCube.style.left = newX + 'px';
-  selectedCube.style.top = newY + 'px';
+slider.addEventListener('mouseleave', () => {
+  isDown = false;
+  slider.classList.remove('active');
 });
 
-document.addEventListener('mouseup', () => {
-  if (selectedCube) {
-    selectedCube.style.zIndex = '';
-    selectedCube = null;
-  }
+slider.addEventListener('mouseup', () => {
+  isDown = false;
+  slider.classList.remove('active');
+});
+
+slider.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - slider.offsetLeft;
+  const walk = (x - startX) * 2;
+  slider.scrollLeft = scrollLeft - walk;
 });
