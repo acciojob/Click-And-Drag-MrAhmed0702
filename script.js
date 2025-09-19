@@ -21,7 +21,7 @@ slider.addEventListener('mouseup', () => {
 });
 
 slider.addEventListener('mousemove', (e) => {
-  if (!isDown) return;
+  if (!(e.buttons === 1 || e.which === 1 || isDown)) return;
   e.preventDefault();
   const x = e.clientX ?? e.pageX;
   const walk = (x - startX) * 2;
